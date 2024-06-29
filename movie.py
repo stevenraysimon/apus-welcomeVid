@@ -58,6 +58,10 @@ def create_movie(selected_video):
         # Adjust volume of the background music
         looped_audio = looped_audio.volumex(0.5)
         
+        # Apply fade out to the last 2 seconds of the background music
+        fade_duration = 2
+        looped_audio = looped_audio.audio_fadeout(fade_duration)
+        
         # Create CompositeAudioClip
         final_audio = CompositeAudioClip([final_clip.audio, looped_audio])
         
