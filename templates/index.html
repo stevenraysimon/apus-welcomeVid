@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APUS Welcome Video Maker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>APUS Welcome Video Maker</h1>
+        <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+            <label for="video">Choose video:</label>
+            <input type="file" id="video" name="video" required>
+            
+            <label for="text">Text to overlay:</label>
+            <input type="text" id="text" name="text" required>
+            
+            <label for="filename">Filename for processed video:</label>
+            <input type="text" id="filename" name="filename" placeholder="final_movie">
+            
+            <button class="button-15" role="button">Upload and Process</button>
+        </form>
+        <div id="progress-container" style="display:none;">
+            <h2>Processing</h2>
+            <progress id="progress-bar" max="100" value="0" style="display: none;"></progress>
+            <span id="progress-text" style="display: none;">0%</span>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('upload-form');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload', true);
+
+            // Show progress container
+            progressContainer.style.display = 'block';
+
+            // Progress bar updates
+            const updateProgress = function () {
+                fetch('/progress')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.progress !== undefined) {
+                            progressBar.value = data.progress;
+                            progressText.textContent = data.progress + '%';
+                            if (data.progress < 100) {
+                                setTimeout(updateProgress, 1000); // Check progress every second
+                            }
+                        } else {
+                            setTimeout(updateProgress, 1000); // If progress is not available, check again after 1 second
+                        }
+                    });
+            };
+
+            // On successful upload
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Hide progress container
+                    progressContainer.style.display = 'none';
+                    
+                    // Create download link and trigger download
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(xhr.response);
+                    link.download = formData.get('filename') || 'final_movie.mp4';
+                    link.click();
+                } else {
+                    alert('An error occurred!');
+                }
+            };
+            
+            xhr.responseType = 'blob';
+            xhr.send(formData);
+
+            // Start progress tracking
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
