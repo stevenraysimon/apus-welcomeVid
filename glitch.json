@@ -1,0 +1,11 @@
+{
+  "start": "python app.py",
+  "scripts": {
+    "start": "python app.py"
+  },
+  "env": {
+    "FLASK_ENV": "production",
+    "FLASK_APP": "app.py",
+    "PORT": 3000
+  }
+}
