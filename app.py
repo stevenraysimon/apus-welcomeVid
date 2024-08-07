@@ -13,7 +13,7 @@ app = Flask(__name__)
 # Paths to your media files
 intro_path = 'intro.mp4'
 outro_path = 'outro.mp4'
-songs_dir = './songs/'  # Directory containing your audio files
+songs_dir = './'  # Directory containing your audio files
 
 # Standard size for YouTube (1080p)
 standard_width = 1920
